@@ -1,10 +1,64 @@
-# supplychannel
+Generating certifiates using cryptogen:
+export PATH=${PWD}/../bin:${PWD}:$PATH
+cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output="organizations"
+cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output="organizations"
+cryptogen generate --config=./organizations/cryptogen/crypto-config-org3.yaml --output="organizations"
+cryptogen generate --config=./organizations/cryptogen/crypto-config-orderer.yaml --output="organizations"
+export DOCKER_SOCK=/var/run/docker.sock
+IMAGE_TAG=latest docker-compose -f compose/compose-test-net.yaml -f compose/docker/docker-compose-test-net.yaml up
+
 Creating channel 1:
 export PATH=${PWD}/../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export CHANNEL_NAME=channel1
 
-configtxgen -profile TwoOrgsApplication1 -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+configtxgen -profile TwoOrgsApplicationGenesis1 -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+cp ../config/core.yaml ./configtx/.
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER1_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
+export ORDERER1_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER1_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER1_ADMIN_TLS_PRIVATE_KEY"
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER2_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+export ORDERER2_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8051 --ca-file "$ORDERER_CA" --client-cert "$ORDERER2_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER2_ADMIN_TLS_PRIVATE_KEY"
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER3_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+export ORDERER3_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8052 --ca-file "$ORDERER_CA" --client-cert "$ORDERER3_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER3_ADMIN_TLS_PRIVATE_KEY"
+
+Creating channel 3:
+export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=${PWD}/configtx
+export CHANNEL_NAME=channel3
+
+configtxgen -profile TwoOrgsApplicationGenesis3 -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+cp ../config/core.yaml ./configtx/.
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER1_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.crt
+export ORDERER1_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8050 --ca-file "$ORDERER_CA" --client-cert "$ORDERER1_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER1_ADMIN_TLS_PRIVATE_KEY"
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER2_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+export ORDERER2_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8051 --ca-file "$ORDERER_CA" --client-cert "$ORDERER2_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER2_ADMIN_TLS_PRIVATE_KEY"
+
+export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export ORDERER3_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+export ORDERER3_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.key
+osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8052 --ca-file "$ORDERER_CA" --client-cert "$ORDERER3_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER3_ADMIN_TLS_PRIVATE_KEY"
+
+Creating channel 1:
+export PATH=${PWD}/../bin:${PWD}:$PATH
+export FABRIC_CFG_PATH=${PWD}/configtx
+export CHANNEL_NAME=channel1
+
+configtxgen -profile TwoOrgsApplicationGenesis1 -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
 cp ../config/core.yaml ./configtx/.
 
 export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
